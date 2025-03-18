@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import joblib
 import numpy as np
 import pandas as pd
+import google.generativeai as genai
 
 app = Flask(__name__)
 
@@ -16,6 +17,42 @@ gender_encoder = joblib.load('models/gender_encoder.pkl')
 race_encoder = joblib.load('models/race_encoder.pkl')
 marital_encoder = joblib.load('models/marital_encoder.pkl')
 scaler = joblib.load('models/scaler.pkl')
+
+# Configure Gemini (add this before your routes)
+genai.configure(api_key="AIzaSyCD-Rx3JJ2XuuXpN4GYZO8NUgvRPMnUgeU")  # Replace with your actual API key
+
+def get_gemini_commentary(results):
+    """Get AI commentary based on prediction results"""
+    prompt = f"""
+    Analyze these car specifications and predicted customer demographics:
+    
+    Car Specifications:
+    - Dimensions: {results['car_specs']['height']}mm (H) x {results['car_specs']['width']}mm (W) x {results['car_specs']['length']}mm (L)
+    - Weight: {results['car_specs']['weight']}kg
+    - Seats: {results['car_specs']['seats']}
+    - Cargo: {results['car_specs']['cargo']}L
+    - Price: RM {results['car_specs']['price']}
+    
+    Predicted Demographics:
+    - Average Age: {results['age']['prediction']}
+    - Most Likely Gender: {results['gender']['prediction']} ({max(results['gender']['confidence'].values())}% confidence)
+    - Predicted Race: {results['race']['prediction']}
+    - Marital Status: {results['marital_status']['prediction']}
+    
+    Provide a brief marketing analysis commentary focusing on:
+    1. Why these demographics might be interested in this vehicle
+    2. Suggested marketing strategies based on the predictions
+    3. Any notable correlations between car specs and demographics
+    4. What car brand and model are they most likely to buy, perodua and any other brands
+
+    Context: this is a machine learning model, trained on Perodua's customers database, use by Perodua internal users
+    
+    Keep it under 150 words and use simple business language.
+    """
+    
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content(prompt)
+    return response.text
 
 @app.route('/')
 def home():
@@ -88,6 +125,14 @@ def predict():
             'confidence': marital_confidence
         }
     }
+
+    # Get AI commentary
+    try:
+        commentary = get_gemini_commentary(results)
+    except Exception as e:
+        commentary = "AI commentary unavailable at this time."
+    
+    results['ai_commentary'] = commentary
     
     return render_template('result.html', results=results)
 
