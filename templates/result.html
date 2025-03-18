@@ -41,6 +41,15 @@
             border-radius: 5px;
             margin-bottom: 30px;
         }
+        .ai-commentary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-style: italic;
+            border-left: 3px solid #0d6efd;
+        }
+
     </style>
 </head>
 <body>
@@ -51,32 +60,49 @@
             <h3>Car Specifications</h3>
             <div class="row">
                 <div class="col-md-3">
-                    <p>Height: <strong>{{ results.car_specs.height }} mm</strong></p>
-                    <p>Length: <strong>{{ results.car_specs.length }} mm</strong></p>
+                    <p>Height: <strong>{{ "{:,.1f}".format(results.car_specs.height) }} mm</strong></p>
+                    <p>Length: <strong>{{ "{:,.1f}".format(results.car_specs.length) }} mm</strong></p>
                 </div>
                 <div class="col-md-3">
-                    <p>Width: <strong>{{ results.car_specs.width }} mm</strong></p>
-                    <p>Volume: <strong>{{ results.car_specs.volume | int }} mm³</strong></p>
+                    <p>Width: <strong>{{ "{:,.1f}".format(results.car_specs.width) }} mm</strong></p>
+                    <p>Volume: <strong>{{ "{:,}".format(results.car_specs.volume|int) }} mm³</strong></p>
                 </div>
                 <div class="col-md-3">
-                    <p>Weight: <strong>{{ results.car_specs.weight }} kg</strong></p>
+                    <p>Weight: <strong>{{ "{:,.1f}".format(results.car_specs.weight) }} kg</strong></p>
                     <p>Seats: <strong>{{ results.car_specs.seats }}</strong></p>
                 </div>
                 <div class="col-md-3">
-                    <p>Cargo: <strong>{{ results.car_specs.cargo }} L</strong></p>
-                    <p>Price: <strong>RM {{ results.car_specs.price }}</strong></p>
+                    <p>Cargo: <strong>{{ "{:,.1f}".format(results.car_specs.cargo) }} L</strong></p>
+                    <p>Price: <strong>RM {{ "{:,}".format(results.car_specs.price) }}</strong></p>
                 </div>
             </div>
         </div>
         
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-12">
+                <div class="prediction-box">
+                    <h3>AI Marketing Analysis</h3>
+                    <div class="ai-commentary">
+                        {{ results.ai_commentary | safe }}
+                    </div>
+                    <small class="text-muted">Analysis powered by Google Gemini</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="row"> Existing demographic predictions row -->
+            <!-- <div class="col-md-6">
+                <div class="prediction-box">
+                    <h3>Age</h3> -->
+
+        <div class="row">
+            <div class="col-12">
                 <div class="prediction-box">
                     <h3>Age</h3>
                     <p>Predicted Age: <span class="prediction-value">{{ results.age.prediction }}</span> years</p>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-12">
                 <div class="prediction-box">
                     <h3>Gender</h3>
                     <p>Predicted Gender: <span class="prediction-value">{{ results.gender.prediction }}</span></p>
@@ -88,20 +114,20 @@
         </div>
         
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-12">
                 <div class="prediction-box">
                     <h3>Race</h3>
                     <p>Predicted Race: <span class="prediction-value">{{ results.race.prediction }}</span></p>
-                    <div class="chart-container">
+                    <div class="chart-container" style="width: 100% !important;">
                         <canvas id="raceChart"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-12">
                 <div class="prediction-box">
                     <h3>Marital Status</h3>
                     <p>Predicted Status: <span class="prediction-value">{{ results.marital_status.prediction }}</span></p>
-                    <div class="chart-container">
+                    <div class="chart-container" style="width: 100% !important;">
                         <canvas id="maritalChart"></canvas>
                     </div>
                 </div>
