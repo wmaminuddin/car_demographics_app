@@ -20,7 +20,7 @@ marital_encoder = joblib.load('models/marital_encoder.pkl')
 scaler = joblib.load('models/scaler.pkl')
 
 # Configure Gemini (add this before your routes)
-genai.configure(api_key="GEMINI_API_KEY")  # Replace with your actual API key
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))  # Replace with your actual API key
 
 def get_gemini_commentary(results):
     """Get AI commentary based on prediction results"""
